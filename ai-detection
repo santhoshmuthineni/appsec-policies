@@ -2,7 +2,6 @@
 rules:
   - id: unauthorized-ai-sdk-import-python
     metadata:
-      id: unauthorized-ai-sdk-import-python
       name: Unauthorized AI SDK Import (Python)
       description: >
         Detects imports of unapproved AI/LLM SDKs in Python source files.
@@ -16,6 +15,7 @@ rules:
       author: Alter Domus AppSec
       references:
         - https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/
+    severity: WARNING
     languages:
       - python
     patterns:
@@ -51,7 +51,6 @@ rules:
       this is an approved use case.
   - id: unauthorized-ai-sdk-import-js
     metadata:
-      id: unauthorized-ai-sdk-import-js
       name: Unauthorized AI SDK Import (JavaScript/TypeScript)
       description: >
         Detects require() or import statements for unapproved AI/LLM
@@ -62,6 +61,7 @@ rules:
       severity: HIGH
       confidence: HIGH
       author: Alter Domus AppSec
+    severity: WARNING
     languages:
       - javascript
       - typescript
@@ -89,7 +89,6 @@ rules:
       exception ticket or contact the AppSec team.
   - id: unauthorized-ai-sdk-csharp
     metadata:
-      id: unauthorized-ai-sdk-csharp
       name: Unauthorized AI SDK Using Statement (C#)
       description: >
         Detects using directives for unapproved AI/LLM namespaces in C#
@@ -101,6 +100,7 @@ rules:
       severity: HIGH
       confidence: HIGH
       author: Alter Domus AppSec
+    severity: WARNING
     languages:
       - csharp
     pattern-either:
@@ -120,7 +120,6 @@ rules:
       AppSec approval. Raise a Jira exception ticket before merging to trunk.
   - id: hardcoded-openai-api-key
     metadata:
-      id: hardcoded-openai-api-key
       name: Hardcoded OpenAI API Key
       description: >
         Detects hardcoded OpenAI API keys (sk- prefix) in source code or
@@ -131,6 +130,7 @@ rules:
       severity: CRITICAL
       confidence: HIGH
       author: Alter Domus AppSec
+    severity: ERROR
     languages:
       - python
       - javascript
@@ -145,7 +145,6 @@ rules:
       variables. Escalate to AppSec immediately.
   - id: hardcoded-anthropic-api-key
     metadata:
-      id: hardcoded-anthropic-api-key
       name: Hardcoded Anthropic API Key
       description: >
         Detects hardcoded Anthropic Claude API keys in source code or
@@ -156,6 +155,7 @@ rules:
       severity: CRITICAL
       confidence: HIGH
       author: Alter Domus AppSec
+    severity: ERROR
     languages:
       - python
       - javascript
@@ -169,7 +169,6 @@ rules:
       Azure Key Vault or environment variables instead.
   - id: hardcoded-google-ai-api-key
     metadata:
-      id: hardcoded-google-ai-api-key
       name: Hardcoded Google AI / Gemini API Key
       description: >
         Detects hardcoded Google AI (Gemini/PaLM) API keys (AIza prefix) in
@@ -180,6 +179,7 @@ rules:
       severity: CRITICAL
       confidence: MEDIUM
       author: Alter Domus AppSec
+    severity: ERROR
     languages:
       - python
       - javascript
@@ -193,7 +193,6 @@ rules:
       Vault or environment variables instead.
   - id: ai-api-key-in-variable-assignment
     metadata:
-      id: ai-api-key-in-variable-assignment
       name: AI API Key Assigned to Variable
       description: >
         Detects variable assignments where AI provider API keys are
@@ -205,6 +204,7 @@ rules:
       severity: CRITICAL
       confidence: HIGH
       author: Alter Domus AppSec
+    severity: ERROR
     languages:
       - python
     pattern-either:
@@ -221,7 +221,6 @@ rules:
       environment variables, or managed identity.
   - id: ai-service-endpoint-in-code
     metadata:
-      id: ai-service-endpoint-in-code
       name: AI Service Endpoint URL in Code
       description: >
         Detects hardcoded references to known AI provider API endpoints in
@@ -233,6 +232,7 @@ rules:
       severity: MEDIUM
       confidence: MEDIUM
       author: Alter Domus AppSec
+    severity: WARNING
     languages:
       - python
       - javascript
@@ -247,7 +247,6 @@ rules:
       is being transmitted to external AI services.
   - id: azure-openai-endpoint-in-code
     metadata:
-      id: azure-openai-endpoint-in-code
       name: Azure OpenAI Custom Endpoint in Code
       description: >
         Detects hardcoded Azure OpenAI deployment endpoints. Even approved
@@ -259,6 +258,7 @@ rules:
       severity: MEDIUM
       confidence: MEDIUM
       author: Alter Domus AppSec
+    severity: WARNING
     languages:
       - python
       - javascript
@@ -272,7 +272,6 @@ rules:
       to appsettings / Key Vault / environment config.
   - id: potential-pii-in-ai-prompt-python
     metadata:
-      id: potential-pii-in-ai-prompt-python
       name: Potential PII / Fund Data Passed to AI Prompt (Python)
       description: >
         Detects patterns where database query results, investor records, or
@@ -285,6 +284,7 @@ rules:
       severity: HIGH
       confidence: LOW
       author: Alter Domus AppSec
+    severity: WARNING
     languages:
       - python
     pattern-either:
@@ -302,7 +302,6 @@ rules:
       policy. Escalate to AppSec for review.
   - id: ai-package-in-requirements-txt
     metadata:
-      id: ai-package-in-requirements-txt
       name: Unauthorized AI Package in requirements.txt
       description: >
         Detects AI/LLM package declarations in Python dependency files.
@@ -314,6 +313,7 @@ rules:
       severity: HIGH
       confidence: HIGH
       author: Alter Domus AppSec
+    severity: WARNING
     languages:
       - generic
     paths:
@@ -329,7 +329,6 @@ rules:
       Raise a Jira exception ticket referencing this finding.
   - id: ai-package-in-package-json
     metadata:
-      id: ai-package-in-package-json
       name: Unauthorized AI Package in package.json
       description: >
         Detects AI/LLM npm package declarations in package.json files for
@@ -340,6 +339,7 @@ rules:
       severity: HIGH
       confidence: HIGH
       author: Alter Domus AppSec
+    severity: WARNING
     languages:
       - generic
     paths:
@@ -353,7 +353,6 @@ rules:
       Jira exception ticket before merging to trunk.
   - id: ai-package-in-csproj
     metadata:
-      id: ai-package-in-csproj
       name: Unauthorized AI NuGet Package in .csproj
       description: >
         Detects AI/LLM NuGet package references in .NET project files.
@@ -365,6 +364,7 @@ rules:
       severity: HIGH
       confidence: HIGH
       author: Alter Domus AppSec
+    severity: WARNING
     languages:
       - generic
     paths:
@@ -379,7 +379,6 @@ rules:
       Raise a Jira exception ticket before merging.
   - id: ai-reference-in-comment
     metadata:
-      id: ai-reference-in-comment
       name: AI Reference in Code Comment or TODO
       description: >
         Low-severity audit rule. Detects developer comments referencing AI
@@ -391,6 +390,7 @@ rules:
       severity: INFO
       confidence: LOW
       author: Alter Domus AppSec
+    severity: INFO
     languages:
       - python
       - javascript
