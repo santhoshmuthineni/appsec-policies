@@ -1,0 +1,421 @@
+
+semgrep/ai-detection/alterdomus-ai-detection-semgrep.yaml
+
+rules:
+
+  # ============================================================
+  # POLICY 1: AI SDK Imports — Python
+  # ============================================================
+  - id: unauthorized-ai-sdk-import-python
+    metadata:
+      id: unauthorized-ai-sdk-import-python
+      name: Unauthorized AI SDK Import (Python)
+      description: >
+        Detects imports of unapproved AI/LLM SDKs in Python source files.
+        Use of third-party AI libraries must be approved via the AppSec
+        exception process before inclusion in Alter Domus codebases.
+      category: security
+      cwe: CWE-1104
+      owasp: A08:2021
+      severity: HIGH
+      confidence: HIGH
+      author: Alter Domus AppSec
+      references:
+        - https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/
+    languages: [python]
+    patterns:
+      - pattern-either:
+          - pattern: import openai
+          - pattern: import anthropic
+          - pattern: import cohere
+          - pattern: import huggingface_hub
+          - pattern: import transformers
+          - pattern: import langchain
+          - pattern: import llama_index
+          - pattern: import mistralai
+          - pattern: import groq
+          - pattern: import together
+          - pattern: import google.generativeai
+          - pattern: from openai import ...
+          - pattern: from anthropic import ...
+          - pattern: from cohere import ...
+          - pattern: from langchain import ...
+          - pattern: from langchain_core import ...
+          - pattern: from langchain_community import ...
+          - pattern: from llama_index import ...
+          - pattern: from transformers import ...
+          - pattern: from huggingface_hub import ...
+          - pattern: from mistralai import ...
+          - pattern: from groq import ...
+          - pattern: from google.generativeai import ...
+    message: >
+      [Alter Domus AppSec] Unauthorized AI SDK detected: '$matched'.
+      Use of AI/LLM libraries requires prior approval via the AppSec
+      exception process. Raise a Jira exception ticket before merging.
+      Contact the AppSec team if this is an approved use case.
+
+  # ============================================================
+  # POLICY 2: AI SDK Imports — JavaScript / TypeScript
+  # ============================================================
+  - id: unauthorized-ai-sdk-import-js
+    metadata:
+      id: unauthorized-ai-sdk-import-js
+      name: Unauthorized AI SDK Import (JavaScript/TypeScript)
+      description: >
+        Detects require() or import statements for unapproved AI/LLM
+        packages in JavaScript and TypeScript files.
+      category: security
+      cwe: CWE-1104
+      owasp: A08:2021
+      severity: HIGH
+      confidence: HIGH
+      author: Alter Domus AppSec
+    languages: [javascript, typescript]
+    pattern-either:
+      - pattern: require('openai')
+      - pattern: require('anthropic')
+      - pattern: require('@anthropic-ai/sdk')
+      - pattern: require('cohere-ai')
+      - pattern: require('langchain')
+      - pattern: require('@google-ai/generativelanguage')
+      - pattern: require('@google/generative-ai')
+      - pattern: require('@mistralai/mistralai')
+      - pattern: require('groq-sdk')
+      - pattern: import ... from 'openai'
+      - pattern: import ... from 'anthropic'
+      - pattern: import ... from '@anthropic-ai/sdk'
+      - pattern: import ... from 'cohere-ai'
+      - pattern: import ... from 'langchain'
+      - pattern: import ... from '@google/generative-ai'
+      - pattern: import ... from '@mistralai/mistralai'
+      - pattern: import ... from 'groq-sdk'
+    message: >
+      [Alter Domus AppSec] Unauthorized AI SDK detected in JS/TS code.
+      AI/LLM package imports require AppSec approval before merging.
+      Raise a Jira exception ticket or contact the AppSec team.
+
+  # ============================================================
+  # POLICY 3: AI SDK Using Statements — C# (.NET)
+  # ============================================================
+  - id: unauthorized-ai-sdk-csharp
+    metadata:
+      id: unauthorized-ai-sdk-csharp
+      name: Unauthorized AI SDK Using Statement (C#)
+      description: >
+        Detects using directives for unapproved AI/LLM namespaces in C#
+        source files. Relevant to .NET codebases including CorPro,
+        Cortland ISPlatform, SAI Adjuster, and Agency Tickler APIs.
+      category: security
+      cwe: CWE-1104
+      owasp: A08:2021
+      severity: HIGH
+      confidence: HIGH
+      author: Alter Domus AppSec
+    languages: [csharp]
+    pattern-either:
+      - pattern: using OpenAI;
+      - pattern: using OpenAI.$ANYTHING;
+      - pattern: using Azure.AI.$ANYTHING;
+      - pattern: using Microsoft.SemanticKernel;
+      - pattern: using Microsoft.SemanticKernel.$ANYTHING;
+      - pattern: using Anthropic;
+      - pattern: using Anthropic.$ANYTHING;
+      - pattern: using LangChain;
+      - pattern: using LangChain.$ANYTHING;
+      - pattern: using Betalgo.OpenAI;
+    message: >
+      [Alter Domus AppSec] Unauthorized AI SDK namespace detected: '$matched'.
+      Use of AI/LLM libraries in .NET codebases requires prior AppSec
+      approval. Raise a Jira exception ticket before merging to trunk.
+
+  # ============================================================
+  # POLICY 4: Hardcoded OpenAI API Key
+  # ============================================================
+  - id: hardcoded-openai-api-key
+    metadata:
+      id: hardcoded-openai-api-key
+      name: Hardcoded OpenAI API Key
+      description: >
+        Detects hardcoded OpenAI API keys (sk- prefix) in source code
+        or configuration files. Exposed keys must be revoked immediately.
+      category: security
+      cwe: CWE-798
+      owasp: A07:2021
+      severity: CRITICAL
+      confidence: HIGH
+      author: Alter Domus AppSec
+    languages: [python, javascript, typescript, csharp, generic]
+    pattern-regex: 'sk-[a-zA-Z0-9]{32,48}'
+    message: >
+      [Alter Domus AppSec] CRITICAL: Hardcoded OpenAI API key detected.
+      Revoke this key immediately via platform.openai.com and rotate.
+      Keys must never be committed to source control. Use Azure Key Vault
+      or environment variables. Escalate to AppSec immediately.
+
+  # ============================================================
+  # POLICY 5: Hardcoded Anthropic API Key
+  # ============================================================
+  - id: hardcoded-anthropic-api-key
+    metadata:
+      id: hardcoded-anthropic-api-key
+      name: Hardcoded Anthropic API Key
+      description: >
+        Detects hardcoded Anthropic Claude API keys in source code
+        or configuration files.
+      category: security
+      cwe: CWE-798
+      owasp: A07:2021
+      severity: CRITICAL
+      confidence: HIGH
+      author: Alter Domus AppSec
+    languages: [python, javascript, typescript, csharp, generic]
+    pattern-regex: 'sk-ant-[a-zA-Z0-9\-_]{32,}'
+    message: >
+      [Alter Domus AppSec] CRITICAL: Hardcoded Anthropic API key detected.
+      Revoke this key immediately via console.anthropic.com and rotate.
+      Use Azure Key Vault or environment variables instead.
+
+  # ============================================================
+  # POLICY 6: Hardcoded Google AI / Gemini API Key
+  # ============================================================
+  - id: hardcoded-google-ai-api-key
+    metadata:
+      id: hardcoded-google-ai-api-key
+      name: Hardcoded Google AI / Gemini API Key
+      description: >
+        Detects hardcoded Google AI (Gemini/PaLM) API keys (AIza prefix)
+        in source code or configuration files.
+      category: security
+      cwe: CWE-798
+      owasp: A07:2021
+      severity: CRITICAL
+      confidence: MEDIUM
+      author: Alter Domus AppSec
+    languages: [python, javascript, typescript, csharp, generic]
+    pattern-regex: 'AIza[0-9A-Za-z\-_]{35}'
+    message: >
+      [Alter Domus AppSec] CRITICAL: Hardcoded Google AI API key detected.
+      Revoke via Google Cloud Console and rotate immediately.
+      Use Azure Key Vault or environment variables instead.
+
+  # ============================================================
+  # POLICY 7: AI API Key in Assignment (Generic — all providers)
+  # ============================================================
+  - id: ai-api-key-in-variable-assignment
+    metadata:
+      id: ai-api-key-in-variable-assignment
+      name: AI API Key Assigned to Variable
+      description: >
+        Detects variable assignments where AI provider API keys are
+        hardcoded as string literals. Catches patterns like
+        openai.api_key = "sk-..." or client = OpenAI(api_key="...").
+      category: security
+      cwe: CWE-798
+      owasp: A07:2021
+      severity: CRITICAL
+      confidence: HIGH
+      author: Alter Domus AppSec
+    languages: [python]
+    pattern-either:
+      - pattern: openai.api_key = "..."
+      - pattern: openai.api_key = '...'
+      - pattern: anthropic.api_key = "..."
+      - pattern: client = openai.OpenAI(api_key="...")
+      - pattern: client = anthropic.Anthropic(api_key="...")
+      - pattern: cohere.Client("...")
+    message: >
+      [Alter Domus AppSec] CRITICAL: AI API key hardcoded in variable
+      assignment. Never store credentials in source code.
+      Use Azure Key Vault, environment variables, or managed identity.
+
+  # ============================================================
+  # POLICY 8: AI Service Endpoint URLs in Code
+  # ============================================================
+  - id: ai-service-endpoint-in-code
+    metadata:
+      id: ai-service-endpoint-in-code
+      name: AI Service Endpoint URL in Code
+      description: >
+        Detects hardcoded references to known AI provider API endpoints
+        in source code. Indicates potential unauthorized AI service
+        integration or data exfiltration risk.
+      category: security
+      cwe: CWE-1104
+      owasp: A08:2021
+      severity: MEDIUM
+      confidence: MEDIUM
+      author: Alter Domus AppSec
+    languages: [python, javascript, typescript, csharp, generic]
+    pattern-regex: 'https://(api\.openai\.com|api\.anthropic\.com|generativelanguage\.googleapis\.com|api\.cohere\.ai|api\.mistral\.ai|api\.groq\.com|api\.together\.xyz|api\.perplexity\.ai)'
+    message: >
+      [Alter Domus AppSec] AI service endpoint URL detected.
+      Direct calls to external AI APIs require AppSec review and approval.
+      Ensure this integration is authorised and that no sensitive fund
+      administration data is being transmitted to external AI services.
+
+  # ============================================================
+  # POLICY 9: Azure OpenAI Custom Endpoint
+  # ============================================================
+  - id: azure-openai-endpoint-in-code
+    metadata:
+      id: azure-openai-endpoint-in-code
+      name: Azure OpenAI Custom Endpoint in Code
+      description: >
+        Detects hardcoded Azure OpenAI deployment endpoints. Even
+        approved Azure OpenAI usage should not have endpoints hardcoded
+        in source — use configuration/Key Vault instead.
+      category: security
+      cwe: CWE-798
+      owasp: A07:2021
+      severity: MEDIUM
+      confidence: MEDIUM
+      author: Alter Domus AppSec
+    languages: [python, javascript, typescript, csharp, generic]
+    pattern-regex: 'https://[a-z0-9\-]+\.openai\.azure\.com'
+    message: >
+      [Alter Domus AppSec] Azure OpenAI endpoint URL detected in code.
+      Even approved Azure OpenAI deployments must not have endpoints
+      hardcoded. Move to appsettings / Key Vault / environment config.
+
+  # ============================================================
+  # POLICY 10: LLM Data Exfiltration Risk — PII/Fund Data in Prompt
+  # ============================================================
+  - id: potential-pii-in-ai-prompt-python
+    metadata:
+      id: potential-pii-in-ai-prompt-python
+      name: Potential PII / Fund Data Passed to AI Prompt (Python)
+      description: >
+        Detects patterns where database query results, investor records,
+        or fund data variables are passed directly into AI API calls.
+        This represents a data exfiltration and regulatory compliance risk
+        in a fund administration context.
+      category: security
+      cwe: CWE-201
+      owasp: A02:2021
+      severity: HIGH
+      confidence: LOW
+      author: Alter Domus AppSec
+    languages: [python]
+    patterns:
+      - pattern: |
+          $CLIENT.chat.completions.create(..., messages=[..., {"role": "user", "content": $DATA}, ...], ...)
+      - pattern: |
+          $CLIENT.messages.create(..., messages=[..., {"role": "user", "content": $DATA}, ...], ...)
+    message: >
+      [Alter Domus AppSec] Data variable '$DATA' is being passed into an
+      AI API prompt. Verify that no investor PII, fund NAV data, or
+      confidential financial records are included. Data sent to external
+      AI APIs may violate GDPR, fund confidentiality obligations, and
+      Alter Domus data governance policy. Escalate to AppSec for review.
+
+  # ============================================================
+  # POLICY 11: AI Package in requirements.txt
+  # ============================================================
+  - id: ai-package-in-requirements-txt
+    metadata:
+      id: ai-package-in-requirements-txt
+      name: Unauthorized AI Package in requirements.txt
+      description: >
+        Detects AI/LLM package declarations in Python dependency files.
+        Complements SAST import detection for cases where the import
+        may not yet exist but the dependency is already declared.
+      category: security
+      cwe: CWE-1104
+      owasp: A08:2021
+      severity: HIGH
+      confidence: HIGH
+      author: Alter Domus AppSec
+    languages: [generic]
+    paths:
+      include:
+        - requirements*.txt
+        - requirements/*.txt
+        - pyproject.toml
+        - Pipfile
+    pattern-regex: '^(openai|anthropic|cohere|langchain|langchain-core|langchain-community|llama-index|llama_index|transformers|huggingface-hub|mistralai|groq|together|google-generativeai|semantic-kernel)[>=<!]'
+    message: >
+      [Alter Domus AppSec] Unauthorized AI package declared in dependency
+      file. All AI/LLM dependencies require AppSec approval before
+      inclusion. Raise a Jira exception ticket referencing this finding.
+
+  # ============================================================
+  # POLICY 12: AI Package in package.json
+  # ============================================================
+  - id: ai-package-in-package-json
+    metadata:
+      id: ai-package-in-package-json
+      name: Unauthorized AI Package in package.json
+      description: >
+        Detects AI/LLM npm package declarations in package.json files
+        for JavaScript and TypeScript projects.
+      category: security
+      cwe: CWE-1104
+      owasp: A08:2021
+      severity: HIGH
+      confidence: HIGH
+      author: Alter Domus AppSec
+    languages: [generic]
+    paths:
+      include:
+        - package.json
+        - package-lock.json
+    pattern-regex: '"(openai|@anthropic-ai\/sdk|anthropic|cohere-ai|langchain|@google\/generative-ai|@mistralai\/mistralai|groq-sdk|@huggingface\/inference)"'
+    message: >
+      [Alter Domus AppSec] Unauthorized AI npm package detected in
+      package.json. All AI/LLM dependencies require AppSec approval.
+      Raise a Jira exception ticket before merging to trunk.
+
+  # ============================================================
+  # POLICY 13: AI Package in .csproj / packages.config
+  # ============================================================
+  - id: ai-package-in-csproj
+    metadata:
+      id: ai-package-in-csproj
+      name: Unauthorized AI NuGet Package in .csproj
+      description: >
+        Detects AI/LLM NuGet package references in .NET project files.
+        Relevant to CorPro, Cortland ISPlatform, SAI Adjuster, and
+        Agency Tickler .NET codebases.
+      category: security
+      cwe: CWE-1104
+      owasp: A08:2021
+      severity: HIGH
+      confidence: HIGH
+      author: Alter Domus AppSec
+    languages: [generic]
+    paths:
+      include:
+        - '*.csproj'
+        - packages.config
+        - '*.fsproj'
+    pattern-regex: 'PackageReference.*Include="(Azure\.AI\.|OpenAI|Betalgo\.OpenAI|Microsoft\.SemanticKernel|Anthropic\.SDK|LangChain\.)'
+    message: >
+      [Alter Domus AppSec] Unauthorized AI NuGet package detected in
+      project file. All AI/LLM dependencies in .NET codebases require
+      AppSec approval. Raise a Jira exception ticket before merging.
+
+  # ============================================================
+  # POLICY 14: AI Usage in Comments / TODOs (Audit / Low severity)
+  # ============================================================
+  - id: ai-reference-in-comment
+    metadata:
+      id: ai-reference-in-comment
+      name: AI Reference in Code Comment or TODO
+      description: >
+        Low-severity audit rule. Detects developer comments referencing
+        AI tools, indicating planned or experimental AI integration that
+        should be reviewed before productionisation.
+      category: audit
+      cwe: CWE-1104
+      owasp: A08:2021
+      severity: INFO
+      confidence: LOW
+      author: Alter Domus AppSec
+    languages: [python, javascript, typescript, csharp]
+    pattern-regex: '(?i)(#|//|/\*)\s*.*(chatgpt|gpt-4|gpt-3\.5|claude api|openai|llm integration|langchain|copilot api|ai generated|generated by ai)'
+    message: >
+      [Alter Domus AppSec] AI tool reference found in code comment.
+      Low severity — for audit visibility only. If AI-assisted code
+      generation was used, ensure output has been reviewed and no
+      proprietary data was submitted to the AI tool. No immediate
+      action required but flag for team awareness.
